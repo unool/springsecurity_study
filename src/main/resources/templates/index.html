@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>SpringSecurity</title>
+</head>
+<body>
+
+
+<h1>메인 페이지입니다.</h1>
+
+<img th:src="@{/image/spring_security.png}" style="width: 200px; height: 150px">
+
+<div>
+	<div sec:authorize="isAnonymous()">
+		<h0> 유저 구분 : Guest</h0>
+		<a th:href="@{/member/login}"> 로그인 </a><br>
+	</div>
+
+	<div sec:authorize="isAuthenticated()">
+		<h0> 유저 구분 : [[${session['user'].auth}]]</h0>
+		<h0> [[${session['user'].id}]] 님 환영합니다 </h0>
+		<a th:href="@{/logout}"> 로그아웃 </a><br>
+	</div>
+</div>
+
+
+
+
+<a th:href="@{/member/register}"> 회원가입 </a><br>
+<a th:href="@{/member/admin}"> Admin 페이지 </a>
+<a th:href="@{/member/user}"> user 페이지 </a>
+
+</body>
+</html>

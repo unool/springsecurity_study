@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>register</title>
+
+	<script src="/webjars/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<h1>Register 페이지입니다.</h1>
+<form th:action="@{/member/register}" method="post">
+
+	<label>ID : </label>
+	<input type="text" name="id">
+	<button type="button" id="idCheck">ID Check</button>
+
+	<label>Password : </label>
+	<input type="text" name="password">
+
+	<label>Email : </label>
+	<input type="text" name="email">
+
+	<input type="hidden" id="vailID" value="false">
+
+	<button type="submit" id="submitBtn">Submit</button>
+
+</form>
+
+<script th:inline="javascript">
+
+    const special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi; //특수문자
+    const space = /\s/; //공백
+    const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;;
+
+	$('#idCheck').click(function(){
+
+        const vail = $('#vailID').val();
+
+	    if(vail == 'false')
+	    {
+            const id = $('input[name=id]').val().toString();
+            if(special_pattern.test(id) || space.test(id) || korean.test(id))
+            {
+                alert('올바른 아이디를 입력하세요');
+                return;
+            }
+
+            var data = { id : id};
+
+
+            $.ajax({
+                url: '/member/exist',
+                method : 'post',
+                contentType : 'application/x-www-form-urlencoded; charset=utf-8',
+                data : data,
+                type : 'post',
+                dataType: 'json',
+                success : function(data){
+					console.log(data);
+
+                    if(data.result == 'true')
+                    {
+                        alert('사용 불가 아이디입니다');
+                    }
+                    else
+                    {
+                        alert('사용 가능 아이디입니다');
+                        $('input[name=id]').prop( 'readonly', true );
+                        $('#vailID').val('true');
+
+                    }
+
+                },
+                error : function(data){
+                    console.log(data);
+                    alert('[' + data.responseJSON.message + ': '+
+	                    data.responseJSON.code +']');
+
+                }
+
+
+            })
+
+        }
+	    else
+	    {
+            $('input[name=id]').prop( 'readonly', false );
+            $('#vailID').val('false');
+            alert('재 설정 하세요');
+	    }
+
+
+
+
+	})
+
+    $('#submitBtn').click(function(){
+
+        if($('#vailID').val() == 'false')
+        {
+            alert('아이디 체크를 하세요');
+            return;
+        }
+
+		$('form').submit();
+    })
+
+
+
+</script>
+</body>
+</html>
